@@ -1,0 +1,17 @@
+# Visual Studio
+.vs/
+x64/
+Debug/
+Release/
+
+# Executables
+*.exe
+*.dll
+*.pdb
+*.ilk
+
+# User files
+*.user
+
+# Database (optional)
+chat.db
