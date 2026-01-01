@@ -50,5 +50,115 @@ This project demonstrates network programming, concurrency, session handling, an
 
 
 
+
+
+
+
 <img width="1918" height="1078" alt="ss1" src="https://github.com/user-attachments/assets/1f33052e-2363-47d5-9061-ca8eae8fe55b" />
 
+
+
+
+
+
+🏗 Architecture
+
+
+1.Server: Accepts connections and manages sessions
+
+2.Session: One per connected client
+
+3.Client: Interactive command-line interface
+
+4.Database: Stores users and message logs            
+
+
+
+
+
+🛠 Technologies Used
+
+1.C++17
+
+2.Boost.Asio
+
+3.SQLite3
+
+4.Multithreading (std::thread, mutex)
+
+5.TCP/IP Networking
+
+6.Git & GitHub
+
+
+
+
+🖥 Commands Supported
+
+register:<username> <password>
+
+login:<username> <password>
+
+logout
+
+whoami
+
+public:<message>
+
+private:<user_id> <message>
+
+group:create <group_id>
+
+group:join <group_id>
+
+group:leave <group_id>
+
+group:list <group_id>
+
+list users
+
+exit
+
+
+
+
+
+⚙️ How to Build & Run
+
+
+
+Requirements:
+
+Visual Studio 2022
+
+Boost (Asio)
+
+SQLite3
+
+Steps
+
+Clone the repository
+
+Open P11.sln
+
+Build Server and Client
+
+Run server first
+
+Run multiple clients in separate terminals
+
+
+
+
+
+📌 Learning Outcomes
+
+1.Real-world client-server design
+
+2.Concurrent programming with thread safety
+
+3.TCP networking using Boost.Asio
+
+4.Database integration in C++
+
+5.Command-driven protocol design
