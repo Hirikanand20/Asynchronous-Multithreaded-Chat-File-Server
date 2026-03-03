@@ -15,15 +15,17 @@ public:
 
     void join(std::shared_ptr<Session> session);
     void leave(int id);
+    void removeUserFromAllGroups(int id);
     std::string getUserStatus(const std::string& username);
     void broadcast(const std::string& msg, int sender_id);
     bool sendMessage(int receiver_id, const std::string& msg);
     std::string getUsernameById(int id);
     std::string listUsers();
 
-    void createGroup(int group_id);
+    
+    void createGroup(int group_id, int creator_id);
 
-    void joinGroup(int group_id, int user_id);
+    bool joinGroup(int group_id, int user_id);
 
     void leaveGroup(int group_id, int user_id);
 
@@ -34,8 +36,9 @@ public:
     void logGroupMessage(int sender, int group_id, const std::string& text);
 
     void logPrivateMessage(int sender, int receiver, const std::string& msg);
+    std::shared_ptr<Session> getSession(int id);
 
-    bool authenticateUser(const std::string& username, const std::string& password);
+    int authenticateUser(const std::string& username, const std::string& password);
     std::string listGroupUsers(int gid);
 private:
     void initDatabase();

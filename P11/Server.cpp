@@ -1,4 +1,4 @@
-#include "Server.hpp"
+﻿#include "Server.hpp"
 #include "Session.hpp"
 #include <iostream>
 #include "Color2.hpp"
@@ -17,23 +17,51 @@ Server::~Server() {
 
 void Server::join(std::shared_ptr<Session> session) {
     std::lock_guard<std::mutex> lock(mutex_);
-    sessions_[session->getId()] = session;
+    sessions_[session->getUserId()] = session;
 }
-
 void Server::leave(int id) {
-    std::lock_guard<std::mutex> lock(mutex_);
-    
-    sqlite3_stmt* stmt;
-    const char* sql = "UPDATE users SET last_seen = CURRENT_TIMESTAMP WHERE id = ?";
 
-    sqlite3_prepare_v2(db, sql, -1, &stmt, nullptr);
-    sqlite3_bind_int(stmt, 1, id);
-    sqlite3_step(stmt);
-    sqlite3_finalize(stmt);
+    {
+        std::lock_guard<std::mutex> lock(mutex_);
 
-    sessions_.erase(id);
+        // Update DB
+        sqlite3_stmt* stmt;
+        const char* sql =
+            "UPDATE users SET last_seen = CURRENT_TIMESTAMP WHERE id = ?";
 
+        sqlite3_prepare_v2(db, sql, -1, &stmt, nullptr);
+        sqlite3_bind_int(stmt, 1, id);
+        sqlite3_step(stmt);
+        sqlite3_finalize(stmt);
+
+        sessions_.erase(id);
+    }
+
+    // 🔓 Call outside previous lock
+    removeUserFromAllGroups(id);
 }
+void Server::removeUserFromAllGroups(int id) {
+
+    std::lock_guard<std::mutex> lock(mutex_);
+
+    for (auto git = groups.begin(); git != groups.end();) {
+
+        auto& members = git->second;
+
+        members.erase(
+            std::remove(members.begin(), members.end(), id),
+            members.end()
+        );
+
+        if (members.empty())
+            git = groups.erase(git);
+        else
+            ++git;
+    }
+}
+
+
+
 std::string Server::getUserStatus(const std::string& username) {
     sqlite3_stmt* stmt;
 
@@ -80,16 +108,30 @@ bool Server::sendMessage(int receiver_id, const std::string& msg) {
 }
 
 
-void Server::createGroup(int group_id) {
-    std::lock_guard<std::mutex> lock(mutex_);
-    groups[group_id] = {};
-}
+void Server::createGroup(int group_id, int creator_id) {
 
-void Server::joinGroup(int group_id, int user_id) {
     std::lock_guard<std::mutex> lock(mutex_);
-    groups[group_id].push_back(user_id);
-}
 
+    if (groups.count(group_id))
+        return;
+
+    groups[group_id] = { creator_id };
+}
+bool Server::joinGroup(int group_id, int user_id) {
+    std::lock_guard<std::mutex> lock(mutex_);
+
+    if (!groups.count(group_id))
+        return false;   // group does not exist
+
+    auto& members = groups[group_id];
+
+    // prevent duplicate joins
+    if (std::find(members.begin(), members.end(), user_id) != members.end())
+        return true;
+
+    members.push_back(user_id);
+    return true;
+}
 void Server::leaveGroup(int group_id, int user_id) {
     std::lock_guard<std::mutex> lock(mutex_);
 
@@ -100,27 +142,50 @@ void Server::leaveGroup(int group_id, int user_id) {
     auto& members = it->second;
     members.erase(std::remove(members.begin(), members.end(), user_id),
         members.end());
-
-    // Remove empty group
+    
     if (members.empty()) {
         groups.erase(it);
     }
 }
-
-
 void Server::sendToGroup(int group_id, int sender_id, const std::string& text) {
-   
-    std::lock_guard<std::mutex> lock(mutex_);
-    for (int uid : groups[group_id]) {
-        if (uid != sender_id && sessions_.count(uid)) {
-            ServerColor::set(ServerColor::BRIGHT_MAGENTA);
-            sessions_[uid]->deliver(
-                "Group " + std::to_string(group_id) + " | " +
-                "User " + std::to_string(sender_id) + ": " + text
-            );
-            ServerColor::reset();
 
+    std::vector<std::shared_ptr<Session>> targets;
+
+    {
+        std::lock_guard<std::mutex> lock(mutex_);
+
+        auto git = groups.find(group_id);
+        if (git == groups.end())
+            return;
+
+        auto& members = git->second;
+
+        // 🔒 CHECK 1: Is sender a member of the group?
+        if (std::find(members.begin(), members.end(), sender_id) == members.end()) {
+            return; // Sender not allowed to send
         }
+
+        // 🔎 Collect all online group members except sender
+        for (auto& [sid, session] : sessions_) {
+
+            int uid = session->getUserId();
+
+            if (uid == sender_id)
+                continue;
+
+            if (std::find(members.begin(), members.end(), uid) != members.end()) {
+                targets.push_back(session);
+            }
+        }
+    }
+
+    // 🔓 Deliver outside the lock
+    for (auto& session : targets) {
+        session->deliver(
+            "Group " + std::to_string(group_id) +
+            " | User " + std::to_string(sender_id) +
+            ": " + text + "\n"
+        );
     }
 }
 std::string Server::listUsers() {
@@ -154,7 +219,7 @@ bool Server::registerUser(const std::string& username, const std::string& passwo
     sqlite3_stmt* stmt;
     const char* sql = "INSERT INTO users (username, password) VALUES (?, ?)";
 
-    if (sqlite3_prepare_v2(db, sql, -1, &stmt, nullptr) != SQLITE_OK)
+    if (sqlite3_prepare_v2(db, sql, -1, &stmt, nullptr) != SQLITE_OK) 
         return false;
 
     sqlite3_bind_text(stmt, 1, username.c_str(), -1, SQLITE_STATIC);
@@ -193,22 +258,28 @@ void Server::logPrivateMessage(int sender, int receiver, const std::string& text
 
     sqlite3_step(stmt);
     sqlite3_finalize(stmt);
-}
-bool Server::authenticateUser(const std::string& username, const std::string& password) {
+}int Server::authenticateUser(const std::string& username,
+    const std::string& password)
+{
     sqlite3_stmt* stmt;
 
-    const char* sql = "SELECT id FROM users WHERE username = ? AND password = ?";
+    const char* sql =
+        "SELECT id FROM users WHERE username = ? AND password = ?";
 
     sqlite3_prepare_v2(db, sql, -1, &stmt, nullptr);
+
     sqlite3_bind_text(stmt, 1, username.c_str(), -1, SQLITE_STATIC);
     sqlite3_bind_text(stmt, 2, password.c_str(), -1, SQLITE_STATIC);
-    
-    bool success = (sqlite3_step(stmt) == SQLITE_ROW);
+
+    int user_id = -1;
+
+    if (sqlite3_step(stmt) == SQLITE_ROW) {
+        user_id = sqlite3_column_int(stmt, 0);  // ✅ fetch DB ID
+    }
 
     sqlite3_finalize(stmt);
-    return success;
+    return user_id;
 }
-
 
 void Server::initDatabase() {
     if (sqlite3_open("chat.db", &db)) {
@@ -273,7 +344,7 @@ std::string Server::listGroupUsers(int gid) {
 
     for (int uid : groups[gid]) {
         std::string username = getUsernameById(uid);
-
+        
         if (sessions_.count(uid))
             result += username + " (online)\n";
         else
@@ -285,6 +356,8 @@ std::string Server::listGroupUsers(int gid) {
 
     return result;
 }
+
+
 
 std::string Server::getUsernameById(int id) {
     sqlite3_stmt* stmt;
@@ -302,15 +375,22 @@ std::string Server::getUsernameById(int id) {
     return username;
 }
 
+std::shared_ptr<Session> Server::getSession(int id) {
+    std::lock_guard<std::mutex> lock(mutex_);
+    auto it = sessions_.find(id);
+    if (it != sessions_.end())
+        return it->second;
+    return nullptr;
+}
 
 void Server::do_accept() {
     acceptor_.async_accept(
         [this](boost::system::error_code ec, tcp::socket socket) {
             if (!ec) {
-                auto session = std::make_shared<Session>(std::move(socket), *this, next_id_++);
+                 auto session = std::make_shared<Session>(std::move(socket), *this, next_id_++);
                 
 
-                std::cout << "Client connected: " << session->getId() << std::endl;
+                std::cout << "Client connected: " << session->getSessionId() << std::endl;
                 session->start();
             }
             do_accept();

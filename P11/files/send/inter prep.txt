@@ -1,0 +1,486 @@
+LINKED LIST INTER QUES :
+
+https://www.geeksforgeeks.org/dsa/top-50-linked-list-interview-question/
+
+
+
+Array inter ques :
+
+https://www.geeksforgeeks.org/dsa/top-50-array-coding-problems-for-interviews/
+
+
+
+
+Company,Core Focus,MCA Entry Salary (2026),Vibe / Culture
+Kimbal Tech,Energy / IoT / Hardware,₹12 - ₹16 LPA,"Product-heavy, high-tech, intense."
+OCR Descartes,Trade / Logistics SaaS,₹6.5 - ₹9.5 LPA,"Stable, corporate, domain-specific."
+Cloud Analogy,Salesforce / CRM,₹4.5 - ₹6.5 LPA,"Fast-paced, certification-driven."
+Symbiotic,IT Services / Staffing,₹3.5 - ₹5.5 LPA,"Learning-focused, high variety."
+
+
+
+Kimbal,High,DSA & OS Fundamentals,Master C++ or Java and low-level system logic.
+OCR Descartes,Medium-High,SQL & Database Design,Show interest in Supply Chain/Trade domains.
+Cloud Analogy,Medium,OOPS & String Manipulation,Practice basic DSA without using inbuilt functions.
+Symbiotic,Easy-Medium,Soft Skills & Basic Coding,Highlight your versatility and eagerness to learn.
+
+
+
+Company,Difficulty,Core Technical Focus,Expected Package (LPA)
+IVP,Very High,"SQL, Finance, Java/C#",₹12 - ₹16
+Nagarro,High,"DSA, System Design",₹6.5 - ₹10
+Cvent,Medium-High,"Java, React, Cloud",₹8 - ₹12
+Kapture CX,Medium,"Python, Full-Stack, AI",₹6 - ₹9
+NxtoAI,Medium-High,"Python, NLP, GenAI",₹7 - ₹11
+
+
+
+
+
+Given an integer array, find a maximum product of a triplet in the array.
+
+Examples: 
+
+Input:  arr[ ] = [10, 3, 5, 6, 20]
+Output: 1200
+Explanation: Multiplication of 10, 6 and 20
+
+Input:  arr[ ] =  [-10, -3, -5, -6, -20]
+Output: -90
+
+Input: arr[ ] =  [1, -4, 3, -6, 7, 0]
+Output: 168
+
+
+
+
+
+// A C++ program to find a maximum product of a
+// triplet in array of integers using nestd loops
+#include <algorithm>
+#include <iostream>
+#include <vector>
+using namespace std;
+
+// Function to find a maximum product of a triplet
+//   in array of integers of size n
+int maxProduct(vector<int> arr)
+{
+    int n = arr.size();
+
+    int maxProduct = -1e9;
+
+    for (int i = 0; i < n - 2; i++)
+        for (int j = i + 1; j < n - 1; j++)
+            for (int k = j + 1; k < n; k++)
+                maxProduct = max(maxProduct, arr[i] * arr[j] * arr[k]);
+
+    return maxProduct;
+}
+
+int main()
+{
+    vector<int> arr = {10, 3, 5, 6, 20};
+    cout << maxProduct(arr) << endl;
+}
+
+
+
+
+
+Given an array prices[] of non-negative integers, representing the prices of the stocks on different days, find the maximum profit possible by buying and selling the stocks on different days when at most one transaction is allowed. Here one transaction means 1 buy + 1 Sell. If it is not possible to make a profit then return 0.
+
+Note: Stock must be bought before being sold.
+
+Examples:
+
+Input: prices[] = [7, 10, 1, 3, 6, 9, 2]
+Output: 8
+Explanation: Buy for price 1 and sell for price 9. 
+
+
+
+
+
+
+
+
+
+function maxProfit(prices) {
+    let n = prices.length;
+    let res = 0;
+
+    // Explore all possible ways to buy and sell stock
+    for (let i = 0; i < n - 1; i++) {
+        for (let j = i + 1; j < n; j++) {
+            res = Math.max(res, prices[j] - prices[i]);
+        }
+    }
+    return res;
+}
+
+//Driver Code
+let prices = [7, 10, 1, 3, 6, 9, 2];
+console.log(maxProfit(prices));
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+#include <algorithm>
+using namespace std;
+
+void nextPermutation(vector<int> &arr) {
+  
+    int n = arr.size(); 
+
+     // Find the pivot index
+    int pivot = -1;                                                       1) [1, 9, 8, 7, 6, 5, 4, 3, 2, 0]
+    for (int i = n - 2; i >= 0; i--) {
+        if (arr[i] < arr[i + 1]) {                                            [2, 9, 8, 7, 6, 5, 4, 3, 1, 0]
+            pivot = i;                                                    [2, 0, 8, 7, 6, 5, 4, 3, 1, 9]
+            break;                                           
+        }                                                                 2)2, 4, 1, 7, 5, 0 
+    }                                                                        
+
+                                                                                    3)2,0,5,7,1,4    
+    // If pivot point does not exist, reverse the
+    // whole array
+    if (pivot == -1) {
+        reverse(arr.begin(), arr.end());
+        return;
+    }
+
+    // find the element from the right that
+    // is greater than pivot
+    for (int i = n - 1; i > pivot; i--) {
+        if (arr[i] > arr[pivot]) {
+            swap(arr[i], arr[pivot]);
+            break;d
+        }
+    }
+
+    // Reverse the elements from pivot + 1 to the 
+    // end to get the next permutation
+    reverse(arr.begin() + pivot + 1, arr.end());
+}
+
+int main() {
+    
+    vector<int> arr = { 2, 4, 1, 7, 5, 0 };
+    nextPermutation(arr);    
+    for (int x : arr) 
+        cout << x << " ";    
+    return 0;
+}
+
+
+
+
+
+Step,Action,Analysis,Array State
+Initial,Start,Input is almost perfectly descending.,"[1, 9, 8, 7, 6, 5, 4, 3, 2, 0]"
+1,Scan for Pivot,"Scans from right: 0<2,2<3,...8<9. Finally, 1<9 at index 0.",Pivot = 1 (at index 0)
+2,Scan for Successor,Scans from right for value >1. The first is 2 at index 8.,Successor = 2 (at index 8)
+3,Swap,Swap 1 and 2.,"[2, 9, 8, 7, 6, 5, 4, 3, 1, 0]"
+4,Reverse Suffix,Everything from index 1 to 9 is reversed.,"[2, 0, 1, 3, 4, 5, 6, 7, 8, 9]"
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+#include <bits/stdc++.h>
+using namespace std;
+
+// Function to apply quadratic transformation
+int evaluate(int x, int A, int B, int C) {
+    return A * x * x + B * x + C;
+}
+
+// Function to transform and sort the array 
+vector<int> sortArray(vector<int> &arr, int A, int B, int C) {
+    int n = arr.size();
+    vector<int> newArr(n);
+
+    int left = 0, right = n - 1;
+    int index = (A >= 0) ? n - 1 : 0;
+
+    // Two-pointer approach to fill newArr 
+    while (left <= right) {
+        int leftVal = evaluate(arr[left], A, B, C);
+        int rightVal = evaluate(arr[right], A, B, C);
+
+        if (A >= 0) {
+            if (leftVal > rightVal) {
+                newArr[index--] = leftVal;
+                left++;
+            } else {
+                newArr[index--] = rightVal;
+                right--;
+            }
+        } else {
+            if (leftVal < rightVal) {
+                newArr[index++] = leftVal;
+                left++;
+            } else {
+                newArr[index++] = rightVal;
+                right--;
+            }
+        }
+    }
+
+    return newArr;
+}
+
+int main() {
+    vector<int> arr = {-4, -2, 0, 2, 4};
+    int A = 1, B = 3, C = 5;
+
+    vector<int> res = sortArray(arr, A, B, C);
+
+    for (int val : res) {
+        cout << val << " ";
+    }
+
+    return 0;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Given the head of a singly linked list, 
+determine the length of the cycle (loop) if one exists.
+ A cycle occurs when a node's next pointer points to 
+a previously visited node in the list. If no cycle is
+ present, return 0.
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ #include<iostream>
+using namespace std;
+
+// Node structure
+class Node {
+public:
+    int data;
+    Node* next;
+  	Node(int x) {
+     	data = x;
+      	next = nullptr;
+    }
+};
+
+// Returns count of nodes present in loop.
+int countNodes(Node* node) {
+    int res = 1;
+    Node* curr = node;
+    while (curr->next != node) {
+        res++;
+        curr = curr->next;
+    }
+    return res;
+}
+
+// Detects and Counts nodes in loop
+int lengthOfLoop(Node* head) {
+    Node *slow = head, *fast = head;
+
+    while (slow != nullptr && fast != nullptr 
+           && fast->next != nullptr) {
+               
+        slow = slow->next;
+        fast = fast->next->next;
+
+        // If slow and fast meet at
+        // some point then there is a loop
+        if (slow == fast)
+            return countNodes(slow);
+    }
+
+    return 0;
+}
+
+int main() {
+    
+  	Node* head = new Node(25);
+    head->next = new Node(14);
+    head->next->next = new Node(19);
+    head->next->next->next = new Node(33);
+    head->next->next->next->next = new Node(10);
+  	
+    head->next->next->next->next->next = head->next->next;
+    
+    cout << lengthOfLoop(head) << endl;
+
+    return 0;
+}
+
+
+op:3
+
+
+
+
+
+
+
+
+Construct a linked list from 2D matrix
+Last Updated : 26 Sep, 2024
+Given a Matrix mat of n*n size, the task is to construct a 2D linked list representation of the given matrix.
+
+
+
+
+
+
+// C++ to implement linked matrix 
+// from a 2D matrix recursively 
+#include <bits/stdc++.h>
+using namespace std;
+
+class Node {
+public:
+    int data;
+    Node *right, *down;
+
+    Node(int x) {
+        data = x;
+        right = down = nullptr;
+    }
+};
+
+// Function to recursively construct the linked matrix 
+// from a given 2D vector
+Node* constructUtil(vector<vector<int>>& mat, 
+                                      int i, int j) {
+  
+    // Base case: if we are out of bounds, return NULL
+    if (i >= mat.size() || j >= mat[0].size()) {
+        return nullptr;
+    }
+
+    // Create a new Node with the current matrix value
+    Node* curr = new Node(mat[i][j]);
+
+    // Recursively construct the right and down pointers
+    curr->right = constructUtil(mat, i, j + 1);
+    curr->down = constructUtil(mat, i + 1, j);
+
+    // Return the constructed Node
+    return curr;
+}
+
+// Function to construct the linked matrix given a 2D vector
+Node* constructLinkedMatrix(vector<vector<int>>& mat) {
+  
+    // Call the utility function starting 
+    // from the top-left corner of the matrix
+    return constructUtil(mat, 0, 0);
+}
+
+void printList(Node *head) {
+    Node *currRow = head;
+    while (currRow != nullptr) {
+        Node *currCol = currRow;
+        while (currCol != nullptr) {
+            cout << currCol->data << " ";
+            currCol = currCol->right;
+        }
+        cout << endl;
+        currRow = currRow->down;
+    }
+}
+
+int main() {
+  
+
+    vector<vector<int>> mat = { { 1, 2, 3 },
+                                { 4, 5, 6 },
+                                { 7, 8, 9 } };
+
+    Node* head = constructLinkedMatrix(mat);
+    printList(head);
+
+    return 0;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+developers
+id	first_name	last_name	level	years_experience
+10	Jack	Davis	junior	1
+11	Helen	Brown	junior	0
+12	Kate	Williams	senior	4
+13	Alex	Miller	senior	8
+14	Sophia	Moore	mid-level	3
+15	Nick	Jackson	mid-level	3
+16	Steven	Martin	junior	2
+17	Megan	Stevens	junior	1
+18	John	Jones	senior	5
+19	Max	Weber	mid-level	4
+

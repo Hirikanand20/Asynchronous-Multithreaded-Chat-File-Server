@@ -1,0 +1,940 @@
+Nice slide 👍 — these are **classic binary tree properties**, and they’re very exam-friendly. I’ll explain **each one clearly with a small example** so it sticks.
+
+---
+
+## 1️⃣ Internal nodes vs External nodes
+
+**Statement:**
+
+> A binary tree with **n internal nodes** has exactly **n + 1 external nodes**.
+
+### What does this mean?
+
+* **Internal node** → a node that has **at least one child**
+* **External node (leaf)** → a node with **no children**
+
+### Example:
+
+```
+        A
+       / \
+      B   C
+         /
+        D
+```
+
+* Internal nodes: `A, C` → **n = 2**
+* External (leaf) nodes: `B, D, (null right of C?)`
+
+In a **proper counting model**, null children are considered external →
+So external nodes = **n + 1 = 3**
+
+✔️ Property holds.
+
+---
+
+## 2️⃣ Relation between leaf nodes and degree-2 nodes
+
+**Statement:**
+
+> For any non-empty binary tree,
+> **n₀ = n₂ + 1**
+
+Where:
+
+* `n₀` = number of **leaf nodes**
+* `n₂` = number of nodes with **degree 2** (two children)
+
+### Example:
+
+```
+        A
+       / \
+      B   C
+         / \
+        D   E
+```
+
+* Leaf nodes (`n₀`): `B, D, E` → **3**
+* Degree-2 nodes (`n₂`): `A, C` → **2**
+
+✔️ `n₀ = n₂ + 1 → 3 = 2 + 1`
+
+---
+
+## 3️⃣ Maximum nodes at level *i*
+
+**Statement:**
+
+> Maximum number of nodes at level `i` is **2ⁱ**, where `i ≥ 0`
+
+(Level counting starts from **0**)
+
+### Example:
+
+```
+Level 0:        A          → 1 = 2⁰
+Level 1:      B   C        → 2 = 2¹
+Level 2:    D  E F  G      → 4 = 2²
+```
+
+So:
+
+* Level 0 → 1 node
+* Level 1 → 2 nodes
+* Level 2 → 4 nodes
+
+✔️ Matches **2ⁱ**
+
+---
+
+## 4️⃣ Maximum nodes in a binary tree of height *k*
+
+**Statement:**
+
+> Maximum nodes = **2ᵏ⁺¹ − 1**
+
+This happens when the tree is **perfect** (completely filled).
+
+### Example:
+
+Height `k = 2`
+
+```
+        A
+       / \
+      B   C
+     / \ / \
+    D  E F  G
+```
+
+Nodes = `7`
+Formula:
+
+```
+2^(2+1) − 1 = 2³ − 1 = 7
+```
+
+✔️ Correct.
+
+---
+
+## 5️⃣ Minimum and maximum height for *n* nodes
+
+**Statement:**
+
+> Height of a binary tree with `n` nodes is:
+
+* **At least** ⌈log₂(n + 1) − 1⌉
+* **At most** `n − 1`
+
+### Minimum height (best case → balanced tree)
+
+Example: `n = 7`
+
+```
+log₂(8) − 1 = 3 − 1 = 2
+```
+
+Height = **2** (perfect tree)
+
+### Maximum height (worst case → skewed tree)
+
+```
+A
+ \
+  B
+   \
+    C
+     \
+      D
+```
+
+For `n = 4` → height = **3 = n − 1**
+
+✔️ Both bounds make sense.
+
+---
+
+## 6️⃣ Number of distinct binary trees with *n* nodes
+
+**Statement:**
+
+> Number of distinct binary trees with `n` nodes is
+> [
+> \frac{(2n)!}{(n+1)! , n!}
+> ]
+
+This is the **Catalan Number**.
+
+### Example:
+
+For `n = 3`:
+[
+\frac{6!}{4! \cdot 3!} = 5
+]
+
+The 5 possible trees:
+
+```
+✔️ Total = **5**
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+## ✅ Inorder Traversal Using Stack (Pseudocode)
+
+**Inorder = Left → Root → Right**
+
+### Pseudocode:
+
+```
+INORDER_TRAVERSAL(root)
+{
+    Stack S
+    Node current = root
+
+    while (current != NULL OR S is not empty)
+    {
+        // Step 3: Reach the leftmost node
+        while (current != NULL)
+        {
+            S.push(current)
+            current = current.left
+        }
+
+        // Step 4: Current is NULL, process stack
+        current = S.pop()
+        print current.data
+
+        // Step 4(c): Visit right subtree
+        current = current.right
+    }
+}
+
+
+## 🌳 Example Tree
+
+        A
+       / \
+      B   C
+     / \   \
+    D   E   F
+
+
+## 🔁 Step-by-Step Execution (Dry Run)
+
+### Initial State:
+
+```
+Stack: empty
+current = A
+```
+
+---
+
+### 🔽 Step 1: Go left and push
+
+| Action | Stack   | Current |
+| ------ | ------- | ------- |
+| Push A | A       | B       |
+| Push B | A, B    | D       |
+| Push D | A, B, D | NULL    |
+
+---
+
+### 🔼 Step 2: Pop & process
+
+| Action | Stack | Output | Current |
+| ------ | ----- | ------ | ------- |
+| Pop D  | A, B  | D      | NULL    |
+
+---
+
+### 🔁 Continue
+
+| Action | Stack | Output  | Current |
+| ------ | ----- | ------- | ------- |
+| Pop B  | A     | D B     | E       |
+| Push E | A, E  |         | NULL    |
+| Pop E  | A     | D B E   | NULL    |
+| Pop A  | empty | D B E A | C       |
+
+---
+
+### Right subtree
+
+| Action | Stack | Output      | Current |
+| ------ | ----- | ----------- | ------- |
+| Push C | C     |             | NULL    |
+| Pop C  | empty | D B E A C   | F       |
+| Push F | F     |             | NULL    |
+| Pop F  | empty | D B E A C F | NULL    |
+
+---
+
+### 🛑 End Condition
+
+```
+current == NULL AND Stack is empty
+```
+
+Traversal complete ✔️
+
+---
+
+## ✅ Final Output (Inorder Traversal)
+
+D B E A C F
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+> **When `current` becomes NULL, won’t the execution exit the outer `while` loop as well?**
+
+### ✅ Short answer: **NO, it will NOT exit**.
+
+### Why?
+
+The outer loop condition is:
+
+(current != NULL) OR (stack not empty)
+(FALSE) OR (TRUE) → TRUE
+
+> After popping D, what happens? Will `current` stay NULL?
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+PREORDER_TRAVERSAL(root)
+{
+    if (root == NULL)
+        return
+
+    Stack S
+    S.push(root)
+
+    while (S is not empty)
+    {
+        Node current = S.pop()
+        print current.data
+
+        // Push right child first
+        if (current.right != NULL)
+            S.push(current.right)
+
+        // Push left child
+        if (current.left != NULL)
+            S.push(current.left)
+    }
+}
+
+        A
+       / \
+      B   C
+     / \   \
+    D   E   F
+
+
+Initial State:
+Stack: [A]
+Output: —
+
+Iteration 1
+
+Pop A → print A
+
+Push C, then B
+
+Stack: [C, B]
+Output: A
+
+Iteration 2
+
+Pop B → print B
+
+Push E, then D
+
+Stack: [C, E, D]
+Output: A B
+
+Iteration 3
+
+Pop D → print D
+
+No children
+
+Stack: [C, E]
+Output: A B D
+
+ 
+Iteration 4
+
+Pop E → print E
+
+No children
+
+Stack: [C]
+Output: A B D E
+
+Iteration 5
+
+Pop C → print C
+
+Push F
+
+Stack: [F]
+Output: A B D E C
+
+Iteration 6
+
+Pop F → print F
+
+No children
+
+Stack: empty
+Output: A B D E C F
+
+✅ Final Preorder Output
+A B D E C F
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+POSTORDER_TRAVERSAL(root)
+{
+    if (root == NULL)
+        return
+
+    Stack S1, S2
+    S1.push(root)
+
+    while (S1 is not empty)
+    {
+        Node current = S1.pop()
+        S2.push(current)
+
+        if (current.left != NULL)
+            S1.push(current.left)
+
+        if (current.right != NULL)
+            S1.push(current.right)
+    }
+
+    while (S2 is not empty)
+    {
+        Node current = S2.pop()
+        print current.data
+    }
+}
+
+        A
+       / \
+      B   C
+     / \   \
+    D   E   F
+
+
+
+
+
+
+
+
+
+
+
+BST_INSERT(root, key)
+{
+
+    Node newNode = createNode(key)
+
+    if (root == NULL)
+        return newNode
+
+    Node current = root
+    Node parent = NULL
+
+    while (current != NULL)
+    {
+        parent = current
+
+        if (key < current.data)
+            current = current.left
+        else
+            current = current.right
+    }
+
+
+     if (key < parent.data)
+        parent.left = newNode
+    else
+        parent.right = newNode
+
+    return root
+
+}
+
+
+
+
+
+
+Great — this is **exactly how examiners expect you to reason** about BST insertion 👍
+Let’s walk through the **working of your code line-by-line**, **iteratively**, with a **clear example table**.
+
+---
+
+## 🌳 Example BST (Before Insertion)
+
+Let the current BST be:
+
+```
+          50
+        /    \
+      30      70
+     /  \    /  \
+   20   40  60   80
+```
+
+### 🔹 Insert key = **65**
+
+---
+
+## 1️⃣ Initial Setup (Code → Meaning)
+
+```cpp
+Node newNode = createNode(65)
+```
+
+➡️ Create a new node with value **65**
+
+```cpp
+if (root == NULL)
+    return newNode
+```
+
+➡️ Tree is **not empty**, so continue.
+
+```cpp
+Node current = root
+Node parent = NULL
+```
+
+| Variable | Value |
+| -------- | ----- |
+| current  | 50    |
+| parent   | NULL  |
+
+---
+
+## 2️⃣ While Loop Execution (Iterative Traversal)
+
+### 🔁 Iteration 1
+
+```cpp
+parent = current
+```
+
+* parent = 50
+
+```cpp
+if (65 < 50) → false
+else → current = current.right
+```
+
+* Move right
+
+| current | parent |
+| ------- | ------ |
+| 70      | 50     |
+
+---
+
+### 🔁 Iteration 2
+
+```cpp
+parent = current
+```
+
+* parent = 70
+
+```cpp
+if (65 < 70) → true
+current = current.left
+```
+
+* Move left
+
+| current | parent |
+| ------- | ------ |
+| 60      | 70     |
+
+---
+
+### 🔁 Iteration 3
+
+```cpp
+parent = current
+```
+
+* parent = 60
+
+```cpp
+if (65 < 60) → false
+current = current.right
+```
+
+* Right child is NULL
+
+| current | parent |
+| ------- | ------ |
+| NULL    | 60     |
+
+---
+
+## 🛑 Exit While Loop
+
+```
+current == NULL
+```
+
+This means we’ve reached the **correct insertion position**.
+
+---
+
+## 3️⃣ Insert the New Node
+
+```cpp
+if (65 < parent.data)
+    parent.left = newNode
+else
+    parent.right = newNode
+```
+
+* `65 < 60` → false
+* Insert as **right child of 60**
+
+---
+
+## 🌳 BST After Insertion
+
+```
+          50
+        /    \
+      30      70
+     /  \    /  \
+   20   40  60   80
+               \
+               65
+
+
+
+
+
+
+
+
+
+Node* getSuccessor(Node* curr) {
+    curr = curr->right;
+    while (curr != nullptr && curr->left != nullptr)
+        curr = curr->left;
+    return curr;
+}
+
+// Delete a node with value x from BST
+Node* delNode(Node* root, int x) {
+    if (root == nullptr)
+        return root;
+
+    if (root->data > x)
+        root->left = delNode(root->left, x);
+    else if (root->data < x)
+        root->right = delNode(root->right, x);
+    else {
+        // Node with 0 or 1 child
+        if (root->left == nullptr) {
+            Node* temp = root->right;
+            delete root;
+            return temp;
+        }
+        if (root->right == nullptr) {
+            Node* temp = root->left;
+            delete root;
+            return temp;
+        }
+
+        // Node with 2 children
+        Node* succ = getSuccessor(root);
+        root->data = succ->data;
+        root->right = delNode(root->right, succ->data);
+    }
+    return root;
+}
+
+
+
+
+Got it. No theory. Just a **brutal BST**, a **hard delete**, and a **code-execution table** showing how the algorithm moves.
+We’ll **stress every path**: deep recursion, successor with right child, multiple returns.
+
+---
+
+## 🔥 MOST DIFFICULT BST CASE
+
+Delete a node with:
+
+* **2 children**
+* **Successor is NOT a leaf**
+* **Successor has a right child**
+* **Deletion happens deep in tree**
+
+### BST
+
+```
+                    50
+                  /    \
+               30        70
+              /  \      /  \
+           20    40   60    90
+                         /
+                       80
+                         \
+                          85
+```
+
+### Delete value: **70**
+
+---
+
+## 🧠 EXPECTED SUCCESSOR
+
+* Right subtree of `70` → `90`
+* Leftmost of that → `80`
+
+⚠️ `80` has a **right child (85)** → hardest legal case
+
+---
+
+## 🧮 CRITICAL EXECUTION TABLE (CODE WALK)
+
+### Function Call Trace
+
+| Step | Function Call | Current Node | x  | Action               |
+| ---- | ------------- | ------------ | -- | -------------------- |
+| 1    | delNode       | 50           | 70 | `50 < 70` → go right |
+| 2    | delNode       | 70           | 70 | FOUND node           |
+| 3    | delNode       | 70           | 70 | Has 2 children       |
+
+---
+
+### `getSuccessor(root=70)`
+
+| Step | curr | Operation                      |
+| ---- | ---- | ------------------------------ |
+| 4    | 70   | `curr = curr->right` → 90      |
+| 5    | 90   | `curr->left != NULL` → go left |
+| 6    | 80   | `curr->left == NULL` → STOP    |
+
+✅ Successor = **80**
+
+---
+
+### Replace Value
+
+| Step | Node | Change            |
+| ---- | ---- | ----------------- |
+| 7    | 70   | `root->data = 80` |
+
+Tree now (logical state):
+
+```
+                    50
+                  /    \
+               30        80   ← replaced
+              /  \      /  \
+           20    40   60    90
+                         /
+                       80
+                         \
+                          85
+```
+
+---
+
+### Delete Duplicate Successor
+
+Call:
+
+```cpp
+root->right = delNode(root->right, 80)
+```
+
+---
+
+## 🔁 SECOND DELETE (HARD PART)
+
+| Step | Function Call | Current Node | x  | Action              |
+| ---- | ------------- | ------------ | -- | ------------------- |
+| 8    | delNode       | 90           | 80 | `90 > 80` → go left |
+| 9    | delNode       | 80           | 80 | FOUND node          |
+
+---
+
+### Node 80 (successor copy) details:
+
+```
+80
+  \
+   85
+```
+
+| Step | Condition    | Result    |
+| ---- | ------------ | --------- |
+| 10   | left == NULL | true      |
+| 11   | temp = right | temp = 85 |
+| 12   | delete node  | delete 80 |
+| 13   | return temp  | return 85 |
+
+---
+
+### Rewiring Happens
+
+| Step | Parent Node    | Pointer Update |
+| ---- | -------------- | -------------- |
+| 14   | 90             | `left = 85`    |
+| 15   | 80 (former 70) | `right = 90`   |
+| 16   | 50             | `right = 80`   |
+
+---
+
+## ✅ FINAL TREE (STRUCTURE PRESERVED)
+
+```
+                           50
+                  /                 \
+               30                    80
+              /  \                  /  \
+           20    40      60        90
+                                              /
+                                           85
+```
+
+---
+
+## 🔍 WHY THIS IS THE LIMIT CASE
+
+This example forces:
+
+* successor ≠ leaf
+* successor has child
+* two recursive delete chains
+* pointer rewiring on return path
+
+If your code handles **this**, it handles **everything**.
+
+---
+
+If you want next:
+
+* 🔁 **Pure iterative delete (no recursion)**
+* 🧪 **Dry run with stack frames**
+* ❌ **Common bugs this example exposes**
+
+Say the word.
+
+
+
+
+
+
+
+
+Good example Of avl rotation here :
+https://www.ques10.com/p/66219/construct-avl-tree-for-the-following-data-21263094/
