@@ -167,13 +167,11 @@ exit
 
 ## 🎥 Video Demonstration
 
-👉 Add your demo video link below:
+## 📺 Project Demonstration
 
-```
+[![Boost.Asio File & Chat Server Demo](https://img.youtube.com/vi/cdryq1UTjgY/maxresdefault.jpg)](https://www.youtube.com/watch?v=cdryq1UTjgY)
 
-```
-
----
+*Click the image above to watch the full walkthrough on YouTube.*
 
 ## 📌 Learning Outcomes
 
