@@ -1,164 +1,201 @@
-📡 Boost.Asio Chat Server (C++)
 
-A multi-client chat server built using C++ and Boost.Asio, supporting authentication, private messaging, public broadcast, group chats, and session management.
+# 📡 Boost.Asio File + Chat Server (C++)
 
-This project demonstrates network programming, concurrency, session handling, and server-client architecture in C++.
+A multi-client **File Transfer + Chat Server** built using **C++17** and **Boost.Asio**, supporting authentication, real-time messaging, group communication, and secure file sharing between users.
 
-🚀 Features
+This project demonstrates advanced **network programming**, **concurrency control**, **file streaming over TCP**, **session management**, and **client-server architecture** in modern C++.
 
-🔐 Authentication & User Management
+---
 
-1.User registration (register:<username> <password>)
+## 🚀 Features
 
-2.Login / Logout
+---
 
-3.whoami command
+## 🔐 Authentication & User Management
 
-4.Online / Offline user tracking
+* User Registration (`register:`)
+* Login / Logout
+* `whoami` command
+* Online / Offline tracking
+* Persistent user storage using SQLite3
+* Thread-safe session handling
 
-5.Persistent storage using SQLite
+---
 
-<img width="1917" height="1078" alt="ss3" src="https://github.com/user-attachments/assets/a2dfc0de-c006-4286-93b7-e22d662add7f" />
+## 💬 Real-Time Messaging System
 
+* Public chat (`public:`)
+* Private messaging (`private:<user_id>`)
+* Group messaging
+* Real-time message delivery
+* Concurrent multi-client support
+* Message logging in database
 
-💬 Messaging System
+---
 
-1.Public messages (public:<message>)
+## 📁 File Transfer System
 
-2.Private messages (private:<user_id> <message>)
+* Send files to specific users
+* Send files to groups
+* File metadata exchange (name, size)
+* Chunk-based file transmission over TCP
+* Automatic file reconstruction on client side
+* Concurrent file transfers supported
+* Server-side file routing logic
 
-3.Real-time message delivery
+---
 
-4.Thread-safe session handling
+## 👥 Group Chat + File Sharing
 
-<img width="1918" height="1078" alt="ss4" src="https://github.com/user-attachments/assets/ee513ee8-4885-4e98-a9ba-dabb0792840e" />
+* Create groups (`group:create <group_id>`)
+* Join / Leave groups
+* List group members
+* Group message broadcasting
+* Group file sharing
+* Multiple active groups simultaneously
 
-👥 Group Chat Support
+---
 
-1.Create groups (group:create <id>)
+## 🏗 Architecture
 
-2.Join / Leave groups
+### 1️⃣ Server
 
-3.List group users
+* Accepts multiple TCP connections
+* Manages sessions
+* Routes messages and files
+* Maintains active user list
+* Handles concurrency using mutexes
 
-4.Group message broadcasting
+### 2️⃣ Session
 
-5.Multiple groups active simultaneously
+* One session per connected client
+* Async read/write handling
+* Auth state management
+* File transfer state tracking
 
+### 3️⃣ Client
 
-<img width="1918" height="1078" alt="ss2" src="https://github.com/user-attachments/assets/96e88474-74f6-4bf4-bbd7-9a31451aff41" />
+* Command-line interface
+* Supports chat + file upload/download
+* Handles asynchronous responses
+* Reconstructs received files
 
+### 4️⃣ Database (SQLite3)
 
+* User credentials
+* Message logs
+* Persistent storage
 
+---
 
+## 🛠 Technologies Used
 
+* C++17
+* Boost.Asio (Asynchronous TCP Networking)
+* SQLite3
+* Multithreading (`std::thread`, `std::mutex`)
+* TCP/IP Socket Programming
+* File I/O (Binary Mode)
+* Git & GitHub
 
+---
 
-<img width="1918" height="1078" alt="ss1" src="https://github.com/user-attachments/assets/1f33052e-2363-47d5-9061-ca8eae8fe55b" />
+## 🖥 Supported Commands
 
+### 🔑 Authentication
 
-
-
-
-
-🏗 Architecture
-
-
-1.Server: Accepts connections and manages sessions
-
-2.Session: One per connected client
-
-3.Client: Interactive command-line interface
-
-4.Database: Stores users and message logs            
-
-
-
-
-
-🛠 Technologies Used
-
-1.C++17
-
-2.Boost.Asio
-
-3.SQLite3
-
-4.Multithreading (std::thread, mutex)
-
-5.TCP/IP Networking
-
-6.Git & GitHub
-
-
-
-
-🖥 Commands Supported
-
-register:<username> <password>
-
-login:<username> <password>
-
+```
+register: <username> <password>
+login: <username> <password>
 logout
-
 whoami
-
-public:<message>
-
-private:<user_id> <message>
-
-group:create <group_id>
-
-group:join <group_id>
-
-group:leave <group_id>
-
-group:list <group_id>
-
 list users
+```
 
+### 💬 Messaging
+
+```
+public: <message>
+private:<user_id> <message>
+```
+
+### 👥 Groups
+
+```
+group:create <group_id>
+group:join <group_id>
+group:leave <group_id>
+group:list <group_id>
+```
+
+### 📁 File Transfer
+
+```
+sendfile:<user_id> <filepath>
+group:sendfile <group_id> <filepath>
+```
+
+### ❌ Exit
+
+```
 exit
+```
 
+---
 
+## ⚙️ How to Build & Run
 
+### 📌 Requirements
 
+* Visual Studio 2022
+* Boost Library (Asio)
+* SQLite3
+* Windows OS (Tested)
 
-⚙️ How to Build & Run
+---
 
+### 🔧 Steps
 
+1. Clone the repository
+2. Open `P11.sln`
+3. Build **Server** and **Client**
+4. Run the **Server** first
+5. Run multiple clients in separate terminals
+6. Login and start chatting or transferring files
 
-Requirements:
+---
 
-Visual Studio 2022
+## 🎥 Video Demonstration
 
-Boost (Asio)
+👉 Add your demo video link below:
 
-SQLite3
+```
 
-Steps
+```
 
-Clone the repository
+---
 
-Open P11.sln
+## 📌 Learning Outcomes
 
-Build Server and Client
+* Advanced Client-Server Architecture Design
+* Asynchronous Networking with Boost.Asio
+* Concurrent Programming & Thread Safety
+* File Streaming over TCP
+* Session State Management
+* Binary File Handling
+* Database Integration (SQLite3)
+* Command-based Network Protocol Design
+* Real-world Distributed System Concepts
 
-Run server first
+---
 
-Run multiple clients in separate terminals
+## 📈 Project Significance
 
+This project simulates real-world messaging systems like:
 
+* WhatsApp (chat logic)
+* Telegram (group system)
+* Basic cloud file routing architecture
 
+It demonstrates strong backend engineering fundamentals in **modern C++ networking**.
 
-
-📌 Learning Outcomes
-
-1.Real-world client-server design
-
-2.Concurrent programming with thread safety
-
-3.TCP networking using Boost.Asio
-
-4.Database integration in C++
-
-5.Command-driven protocol design
