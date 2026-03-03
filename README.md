@@ -51,7 +51,6 @@ This project demonstrates advanced **network programming**, **concurrency contro
 * Join / Leave groups
 * List group members
 * Group message broadcasting
-* Group file sharing
 * Multiple active groups simultaneously
 
 ---
